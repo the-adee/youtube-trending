@@ -1,18 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './TrendingPage.css';
 import VideoCard from './VideoCard';
 import CategoryTabs from './CategoryTabs';
+import RegionSelector from './RegionSelector';
 
 const TrendingPage = () => {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeCategory, setActiveCategory] = useState('');
+  const [selectedRegion, setSelectedRegion] = useState({
+    country: 'IN',
+    region: 'IN',
+    countryName: 'India',
+    regionName: 'India'
+  });
 
   // Backend API configuration
   const API_BASE_URL = 'http://localhost:3000/api';
 
-  const fetchTrendingVideos = async (categoryId = '') => {
+  const fetchTrendingVideos = useCallback(async (categoryId = '', regionData = selectedRegion) => {
     setLoading(true);
     setError(null);
     
@@ -20,7 +27,8 @@ const TrendingPage = () => {
       let url = `${API_BASE_URL}/trending`;
       const params = new URLSearchParams();
       
-      params.set('region', 'IN');
+      // Use the region from regionData (either country or sub-region)
+      params.set('region', regionData.region);
       params.set('maxResults', '20');
       
       if (categoryId) {
@@ -30,6 +38,7 @@ const TrendingPage = () => {
       url += '?' + params.toString();
 
       console.log('🔍 Fetching from:', url);
+      console.log('📍 Region details:', regionData);
 
       const response = await fetch(url);
       
@@ -42,6 +51,7 @@ const TrendingPage = () => {
       if (result.success) {
         setVideos(result.data.videos || []);
         console.log('✅ Fetched videos:', result.data.videos?.length || 0);
+        console.log('📊 Region info:', result.meta);
       } else {
         throw new Error(result.error || 'Failed to fetch videos');
       }
@@ -54,7 +64,7 @@ const TrendingPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedRegion]); // Include selectedRegion as dependency
 
   const setMockData = () => {
     // Mock data for development/demo purposes
@@ -86,22 +96,37 @@ const TrendingPage = () => {
 
   useEffect(() => {
     const loadTrendingVideos = async () => {
-      await fetchTrendingVideos(activeCategory);
+      await fetchTrendingVideos(activeCategory, selectedRegion);
     };
     
     loadTrendingVideos();
-  }, [activeCategory]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activeCategory, selectedRegion, fetchTrendingVideos]); // Include all dependencies
 
   const handleCategoryChange = (categoryId) => {
     setActiveCategory(categoryId);
+  };
+
+  const handleRegionChange = (regionData) => {
+    console.log('🌍 Region changed to:', regionData);
+    setSelectedRegion(regionData);
   };
 
   if (error && videos.length === 0) {
     return (
       <div className="trending-page">
         <div className="page-header">
-          <h1>Trending</h1>
-          <p>See what's trending on YouTube in India</p>
+          <div className="header-content">
+            <div className="header-text">
+              <h1>Trending</h1>
+              <p>See what's trending on YouTube in {selectedRegion.regionName}</p>
+            </div>
+            <div className="header-controls">
+              <RegionSelector 
+                onRegionChange={handleRegionChange} 
+                selectedRegion={selectedRegion.region}
+              />
+            </div>
+          </div>
         </div>
         <CategoryTabs 
           activeCategory={activeCategory} 
@@ -111,7 +136,7 @@ const TrendingPage = () => {
           <h2>Unable to load trending videos</h2>
           <p>Error: {error}</p>
           <p>Make sure the backend server is running on port 3000.</p>
-          <button onClick={() => fetchTrendingVideos(activeCategory)} className="retry-button">
+          <button onClick={() => fetchTrendingVideos(activeCategory, selectedRegion)} className="retry-button">
             Try Again
           </button>
         </div>
@@ -122,8 +147,18 @@ const TrendingPage = () => {
   return (
     <div className="trending-page">
       <div className="page-header">
-        <h1>Trending</h1>
-        <p>See what's trending on YouTube in India</p>
+        <div className="header-content">
+          <div className="header-text">
+            <h1>Trending</h1>
+            <p>See what's trending on YouTube in {selectedRegion.regionName}</p>
+          </div>
+          <div className="header-controls">
+            <RegionSelector 
+              onRegionChange={handleRegionChange} 
+              selectedRegion={selectedRegion.region}
+            />
+          </div>
+        </div>
       </div>
       
       <CategoryTabs 

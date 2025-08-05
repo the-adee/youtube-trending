@@ -14,6 +14,19 @@
   background-color: var(--bg-primary);
 }
 
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.header-text {
+  flex: 1;
+  min-width: 200px;
+}
+
 .page-header h1 {
   font-size: 28px;
   font-weight: 400;
@@ -25,6 +38,13 @@
   font-size: 14px;
   color: var(--text-secondary);
   margin: 0;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
 }
 
 .videos-container {
@@ -164,6 +184,16 @@
 @media (max-width: 768px) {
   .page-header {
     padding: 16px;
+  }
+  
+  .header-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  
+  .header-controls {
+    justify-content: flex-start;
   }
   
   .page-header h1 {
