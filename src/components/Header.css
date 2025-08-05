@@ -142,12 +142,19 @@
   border-radius: 50%;
   overflow: hidden;
   cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.profile-button:hover {
+  border-color: var(--border-color);
 }
 
 .profile-button img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  background-color: var(--bg-secondary);
 }
 
 /* Mobile responsiveness */

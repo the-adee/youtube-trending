@@ -72,7 +72,7 @@ const Header = ({ onToggleSidebar }) => {
           </svg>
         </button>
         <div className="profile-button">
-          <img src="https://ui-avatars.com/api/?name=User&background=ff0000&color=fff&size=32" alt="Profile" />
+          <img src="https://static.wikia.nocookie.net/logo-timeline/images/d/d6/YouTube_2012-2015_%28iOS%29.png/revision/latest?cb=20210228013508" alt="Profile" />
         </div>
       </div>
     </header>
