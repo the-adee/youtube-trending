@@ -37,7 +37,31 @@
 .page-header p {
   font-size: 14px;
   color: var(--text-secondary);
-  margin: 0;
+  margin: 0 0 8px 0;
+}
+
+.cache-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+.last-updated {
+  color: #0066cc;
+  font-weight: 500;
+}
+
+.fallback-notice {
+  color: #ff6600;
+  font-weight: 500;
+}
+
+.next-update {
+  color: var(--text-secondary);
 }
 
 .header-controls {
@@ -198,6 +222,12 @@
   
   .page-header h1 {
     font-size: 24px;
+  }
+  
+  .cache-info {
+    flex-direction: column;
+    gap: 4px;
+    font-size: 11px;
   }
   
   .loading-container,

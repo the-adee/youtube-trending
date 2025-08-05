@@ -4,144 +4,68 @@ import './RegionSelector.css';
 const RegionSelector = ({ onRegionChange, selectedRegion = 'IN' }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Countries with their regions/cities for more personalized trending
-  const regions = {
-    // India - Major regions with different cultural preferences
-    'IN': {
-      name: 'India',
-      flag: '🇮🇳',
-      subRegions: [
-        { code: 'IN-DL', name: 'Delhi/NCR', description: 'Hindi, English content' },
-        { code: 'IN-MH', name: 'Mumbai/Maharashtra', description: 'Hindi, Marathi content' },
-        { code: 'IN-KA', name: 'Bangalore/Karnataka', description: 'Kannada, English content' },
-        { code: 'IN-TN', name: 'Chennai/Tamil Nadu', description: 'Tamil content' },
-        { code: 'IN-WB', name: 'Kolkata/West Bengal', description: 'Bengali content' },
-        { code: 'IN-KL', name: 'Kerala', description: 'Malayalam content' },
-        { code: 'IN-AP', name: 'Hyderabad/Andhra Pradesh', description: 'Telugu content' },
-        { code: 'IN-PB', name: 'Punjab', description: 'Punjabi content' },
-        { code: 'IN-GJ', name: 'Gujarat', description: 'Gujarati content' },
-        { code: 'IN-RJ', name: 'Rajasthan', description: 'Hindi, Rajasthani content' }
-      ]
-    },
-    
-    // United States - Major regions
-    'US': {
-      name: 'United States',
-      flag: '🇺🇸',
-      subRegions: [
-        { code: 'US-CA', name: 'California', description: 'West Coast trending' },
-        { code: 'US-NY', name: 'New York', description: 'East Coast trending' },
-        { code: 'US-TX', name: 'Texas', description: 'Southern trending' },
-        { code: 'US-FL', name: 'Florida', description: 'Southeast trending' },
-        { code: 'US-IL', name: 'Illinois', description: 'Midwest trending' }
-      ]
-    },
+  // Countries supported by YouTube API
+  const countries = [
+    { code: 'IN', name: 'India', flag: '🇮🇳' },
+    { code: 'US', name: 'United States', flag: '🇺🇸' },
+    { code: 'GB', name: 'United Kingdom', flag: '🇬🇧' },
+    { code: 'CA', name: 'Canada', flag: '🇨🇦' },
+    { code: 'AU', name: 'Australia', flag: '🇦🇺' },
+    { code: 'DE', name: 'Germany', flag: '🇩🇪' },
+    { code: 'FR', name: 'France', flag: '🇫🇷' },
+    { code: 'JP', name: 'Japan', flag: '🇯🇵' },
+    { code: 'BR', name: 'Brazil', flag: '🇧🇷' },
+    { code: 'KR', name: 'South Korea', flag: '��' },
+    { code: 'MX', name: 'Mexico', flag: '🇲🇽' },
+    { code: 'IT', name: 'Italy', flag: '🇮🇹' },
+    { code: 'ES', name: 'Spain', flag: '🇪🇸' },
+    { code: 'RU', name: 'Russia', flag: '🇷🇺' },
+    { code: 'NL', name: 'Netherlands', flag: '��' },
+    { code: 'SE', name: 'Sweden', flag: '🇸🇪' },
+    { code: 'NO', name: 'Norway', flag: '🇳🇴' },
+    { code: 'DK', name: 'Denmark', flag: '🇩🇰' },
+    { code: 'FI', name: 'Finland', flag: '��' },
+    { code: 'BE', name: 'Belgium', flag: '🇧🇪' },
+    { code: 'CH', name: 'Switzerland', flag: '🇨🇭' },
+    { code: 'AT', name: 'Austria', flag: '🇦🇹' },
+    { code: 'IE', name: 'Ireland', flag: '��' },
+    { code: 'NZ', name: 'New Zealand', flag: '🇳🇿' },
+    { code: 'SG', name: 'Singapore', flag: '🇸🇬' },
+    { code: 'HK', name: 'Hong Kong', flag: '🇭🇰' },
+    { code: 'TW', name: 'Taiwan', flag: '🇹🇼' },
+    { code: 'TH', name: 'Thailand', flag: '��' },
+    { code: 'MY', name: 'Malaysia', flag: '🇲🇾' },
+    { code: 'ID', name: 'Indonesia', flag: '🇮🇩' },
+    { code: 'PH', name: 'Philippines', flag: '🇵🇭' },
+    { code: 'VN', name: 'Vietnam', flag: '🇻🇳' },
+    { code: 'AR', name: 'Argentina', flag: '�🇷' },
+    { code: 'CL', name: 'Chile', flag: '🇨🇱' },
+    { code: 'CO', name: 'Colombia', flag: '🇨🇴' },
+    { code: 'PE', name: 'Peru', flag: '🇵🇪' },
+    { code: 'ZA', name: 'South Africa', flag: '🇿🇦' },
+    { code: 'EG', name: 'Egypt', flag: '��' },
+    { code: 'NG', name: 'Nigeria', flag: '🇳🇬' },
+    { code: 'KE', name: 'Kenya', flag: '🇰🇪' },
+    { code: 'MA', name: 'Morocco', flag: '🇲🇦' },
+    { code: 'SA', name: 'Saudi Arabia', flag: '🇸🇦' },
+    { code: 'AE', name: 'UAE', flag: '��' },
+    { code: 'IL', name: 'Israel', flag: '🇮🇱' },
+    { code: 'TR', name: 'Turkey', flag: '🇹🇷' },
+    { code: 'PL', name: 'Poland', flag: '🇵🇱' },
+    { code: 'CZ', name: 'Czech Republic', flag: '🇨🇿' },
+    { code: 'HU', name: 'Hungary', flag: '��' },
+    { code: 'GR', name: 'Greece', flag: '🇬🇷' },
+    { code: 'PT', name: 'Portugal', flag: '🇵🇹' },
+    { code: 'BG', name: 'Bulgaria', flag: '🇧🇬' },
+    { code: 'RO', name: 'Romania', flag: '🇷🇴' }
+  ];
 
-    // United Kingdom
-    'GB': {
-      name: 'United Kingdom',
-      flag: '🇬🇧',
-      subRegions: [
-        { code: 'GB-ENG', name: 'England', description: 'English trending' },
-        { code: 'GB-SCT', name: 'Scotland', description: 'Scottish trending' },
-        { code: 'GB-WLS', name: 'Wales', description: 'Welsh trending' },
-        { code: 'GB-NIR', name: 'Northern Ireland', description: 'Northern Irish trending' }
-      ]
-    },
-
-    // Canada
-    'CA': {
-      name: 'Canada',
-      flag: '🇨🇦',
-      subRegions: [
-        { code: 'CA-ON', name: 'Ontario', description: 'Central Canada trending' },
-        { code: 'CA-QC', name: 'Quebec', description: 'French Canadian trending' },
-        { code: 'CA-BC', name: 'British Columbia', description: 'West Coast trending' },
-        { code: 'CA-AB', name: 'Alberta', description: 'Prairie trending' }
-      ]
-    },
-
-    // Australia
-    'AU': {
-      name: 'Australia',
-      flag: '🇦🇺',
-      subRegions: [
-        { code: 'AU-NSW', name: 'New South Wales', description: 'Sydney region' },
-        { code: 'AU-VIC', name: 'Victoria', description: 'Melbourne region' },
-        { code: 'AU-QLD', name: 'Queensland', description: 'Brisbane region' },
-        { code: 'AU-WA', name: 'Western Australia', description: 'Perth region' }
-      ]
-    },
-
-    // Germany
-    'DE': {
-      name: 'Germany',
-      flag: '🇩🇪',
-      subRegions: [
-        { code: 'DE-BY', name: 'Bavaria', description: 'Southern Germany' },
-        { code: 'DE-NW', name: 'North Rhine-Westphalia', description: 'Western Germany' },
-        { code: 'DE-BE', name: 'Berlin', description: 'Capital region' },
-        { code: 'DE-HH', name: 'Hamburg', description: 'Northern Germany' }
-      ]
-    },
-
-    // France
-    'FR': {
-      name: 'France',
-      flag: '🇫🇷',
-      subRegions: [
-        { code: 'FR-IDF', name: 'Île-de-France', description: 'Paris region' },
-        { code: 'FR-ARA', name: 'Auvergne-Rhône-Alpes', description: 'Lyon region' },
-        { code: 'FR-PAC', name: 'Provence-Alpes-Côte d\'Azur', description: 'Marseille region' },
-        { code: 'FR-OCC', name: 'Occitanie', description: 'Toulouse region' }
-      ]
-    },
-
-    // Japan
-    'JP': {
-      name: 'Japan',
-      flag: '🇯🇵',
-      subRegions: [
-        { code: 'JP-13', name: 'Tokyo', description: 'Kanto region' },
-        { code: 'JP-27', name: 'Osaka', description: 'Kansai region' },
-        { code: 'JP-01', name: 'Hokkaido', description: 'Northern Japan' },
-        { code: 'JP-40', name: 'Fukuoka', description: 'Kyushu region' }
-      ]
-    },
-
-    // Brazil
-    'BR': {
-      name: 'Brazil',
-      flag: '🇧🇷',
-      subRegions: [
-        { code: 'BR-SP', name: 'São Paulo', description: 'Southeast trending' },
-        { code: 'BR-RJ', name: 'Rio de Janeiro', description: 'Southeast coastal' },
-        { code: 'BR-MG', name: 'Minas Gerais', description: 'Interior southeast' },
-        { code: 'BR-RS', name: 'Rio Grande do Sul', description: 'Southern Brazil' }
-      ]
-    },
-
-    // South Korea
-    'KR': {
-      name: 'South Korea',
-      flag: '🇰🇷',
-      subRegions: [
-        { code: 'KR-11', name: 'Seoul', description: 'Capital region' },
-        { code: 'KR-26', name: 'Busan', description: 'Southern coast' },
-        { code: 'KR-27', name: 'Daegu', description: 'Central region' },
-        { code: 'KR-28', name: 'Incheon', description: 'Western region' }
-      ]
-    }
-  };
-
-  const handleRegionSelect = (regionCode, subRegionCode = null) => {
+  const handleCountrySelect = (country) => {
     const selectedData = {
-      country: regionCode,
-      region: subRegionCode || regionCode,
-      countryName: regions[regionCode]?.name || 'Unknown',
-      regionName: subRegionCode ? 
-        regions[regionCode]?.subRegions?.find(r => r.code === subRegionCode)?.name || 'Unknown' :
-        regions[regionCode]?.name || 'Unknown'
+      country: country.code,
+      region: country.code,
+      countryName: country.name,
+      regionName: country.name
     };
     
     onRegionChange(selectedData);
@@ -149,28 +73,36 @@ const RegionSelector = ({ onRegionChange, selectedRegion = 'IN' }) => {
   };
 
   const getCurrentSelection = () => {
-    // Find current selection
-    for (const [countryCode, countryData] of Object.entries(regions)) {
-      if (selectedRegion === countryCode) {
-        return `${countryData.flag} ${countryData.name}`;
-      }
-      
-      const subRegion = countryData.subRegions?.find(r => r.code === selectedRegion);
-      if (subRegion) {
-        return `${countryData.flag} ${subRegion.name}`;
-      }
-    }
-    return '🌍 Select Region';
+    const country = countries.find(c => c.code === selectedRegion);
+    return country ? { flag: country.flag, name: country.name } : { flag: '🌍', name: 'Select Country' };
   };
+
+  // Close dropdown when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.region-selector')) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [isOpen]);
 
   return (
     <div className="region-selector">
       <button 
-        className="region-selector-button"
+        className={`region-selector-button ${isOpen ? 'open' : ''}`}
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
+        aria-label="Select country for trending videos"
       >
-        <span className="region-text">{getCurrentSelection()}</span>
+        <span className="region-text">
+          <span className="region-flag">{getCurrentSelection().flag}</span>
+          {getCurrentSelection().name}
+        </span>
         <svg 
           className={`chevron ${isOpen ? 'open' : ''}`}
           viewBox="0 0 24 24" 
@@ -186,37 +118,22 @@ const RegionSelector = ({ onRegionChange, selectedRegion = 'IN' }) => {
         <div className="region-dropdown">
           <div className="region-dropdown-content">
             <div className="region-header">
-              <h3>Select Country & Region</h3>
-              <p>Get trending videos for your specific location</p>
+              <h3>Select Country</h3>
+              <p>Choose a country to see its trending videos</p>
             </div>
 
-            {Object.entries(regions).map(([countryCode, countryData]) => (
-              <div key={countryCode} className="country-section">
+            <div className="countries-grid">
+              {countries.map((country) => (
                 <button
-                  className="country-button"
-                  onClick={() => handleRegionSelect(countryCode)}
+                  key={country.code}
+                  className={`country-item ${selectedRegion === country.code ? 'selected' : ''}`}
+                  onClick={() => handleCountrySelect(country)}
                 >
-                  <span className="country-flag">{countryData.flag}</span>
-                  <span className="country-name">{countryData.name}</span>
-                  <span className="country-subtitle">National trending</span>
+                  <span className="country-flag">{country.flag}</span>
+                  <span className="country-name">{country.name}</span>
                 </button>
-
-                {countryData.subRegions && (
-                  <div className="sub-regions">
-                    {countryData.subRegions.map((subRegion) => (
-                      <button
-                        key={subRegion.code}
-                        className="sub-region-button"
-                        onClick={() => handleRegionSelect(countryCode, subRegion.code)}
-                      >
-                        <span className="sub-region-name">{subRegion.name}</span>
-                        <span className="sub-region-description">{subRegion.description}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       )}

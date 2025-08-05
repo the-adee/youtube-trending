@@ -9,6 +9,7 @@ const TrendingPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeCategory, setActiveCategory] = useState('');
+  const [cacheInfo, setCacheInfo] = useState(null);
   const [selectedRegion, setSelectedRegion] = useState({
     country: 'IN',
     region: 'IN',
@@ -50,8 +51,9 @@ const TrendingPage = () => {
       
       if (result.success) {
         setVideos(result.data.videos || []);
+        setCacheInfo(result.meta);
         console.log('✅ Fetched videos:', result.data.videos?.length || 0);
-        console.log('📊 Region info:', result.meta);
+        console.log('📊 Cache info:', result.meta);
       } else {
         throw new Error(result.error || 'Failed to fetch videos');
       }
@@ -111,6 +113,41 @@ const TrendingPage = () => {
     setSelectedRegion(regionData);
   };
 
+  // Helper function to format last updated time
+  const formatLastUpdated = () => {
+    if (!cacheInfo?.lastUpdated) return '';
+    
+    const lastUpdated = new Date(cacheInfo.lastUpdated);
+    const now = new Date();
+    const diffMinutes = Math.floor((now - lastUpdated) / (1000 * 60));
+    
+    if (diffMinutes < 1) return 'Just now';
+    if (diffMinutes < 60) return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
+    
+    const diffHours = Math.floor(diffMinutes / 60);
+    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+    
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+  };
+
+  // Helper function to get next update info
+  const getNextUpdateInfo = () => {
+    if (!cacheInfo?.minutesToNextUpdate) return '';
+    
+    const minutes = cacheInfo.minutesToNextUpdate;
+    if (minutes <= 0) return 'Updating soon...';
+    if (minutes < 60) return `Next update in ${minutes} minute${minutes > 1 ? 's' : ''}`;
+    
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    
+    if (remainingMinutes === 0) {
+      return `Next update in ${hours} hour${hours > 1 ? 's' : ''}`;
+    }
+    return `Next update in ${hours}h ${remainingMinutes}m`;
+  };
+
   if (error && videos.length === 0) {
     return (
       <div className="trending-page">
@@ -119,6 +156,21 @@ const TrendingPage = () => {
             <div className="header-text">
               <h1>Trending</h1>
               <p>See what's trending on YouTube in {selectedRegion.regionName}</p>
+              {cacheInfo && (
+                <div className="cache-info">
+                  <span className="last-updated">
+                    📊 Updated {formatLastUpdated()}
+                  </span>
+                  {cacheInfo.isFallback && (
+                    <span className="fallback-notice">
+                      • Showing global trending data
+                    </span>
+                  )}
+                  <span className="next-update">
+                    • {getNextUpdateInfo()}
+                  </span>
+                </div>
+              )}
             </div>
             <div className="header-controls">
               <RegionSelector 
@@ -151,6 +203,21 @@ const TrendingPage = () => {
           <div className="header-text">
             <h1>Trending</h1>
             <p>See what's trending on YouTube in {selectedRegion.regionName}</p>
+            {cacheInfo && (
+              <div className="cache-info">
+                <span className="last-updated">
+                  📊 Updated {formatLastUpdated()}
+                </span>
+                {cacheInfo.isFallback && (
+                  <span className="fallback-notice">
+                    • Showing global trending data
+                  </span>
+                )}
+                <span className="next-update">
+                  • {getNextUpdateInfo()}
+                </span>
+              </div>
+            )}
           </div>
           <div className="header-controls">
             <RegionSelector 
