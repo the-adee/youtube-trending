@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './RegionSelector.css';
 
 const RegionSelector = ({ onRegionChange, selectedRegion = 'IN' }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -92,19 +91,36 @@ const RegionSelector = ({ onRegionChange, selectedRegion = 'IN' }) => {
   }, [isOpen]);
 
   return (
-    <div className="region-selector">
+    <div className="region-selector relative inline-block w-full lg:w-80 z-50">
       <button 
-        className={`region-selector-button ${isOpen ? 'open' : ''}`}
+        className={`
+          flex items-center justify-between w-full px-4 py-3 
+          bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 
+          rounded-xl text-sm font-semibold text-gray-900 dark:text-white
+          transition-all duration-300 min-h-12 gap-3
+          shadow-md hover:shadow-lg
+          ${isOpen 
+            ? 'border-youtube-red shadow-youtube ring-2 ring-youtube-red/20' 
+            : 'hover:border-youtube-red/30 hover:shadow-md'
+          }
+          group relative overflow-hidden
+        `}
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
         aria-label="Select country for trending videos"
       >
-        <span className="region-text">
-          <span className="region-flag">{getCurrentSelection().flag}</span>
-          {getCurrentSelection().name}
+        {/* Background gradient on hover */}
+        <div className="absolute inset-0 bg-gradient-to-r from-youtube-red/5 to-youtube-red/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        
+        <span className="flex items-center gap-3 flex-1 truncate relative z-10">
+          <span className="text-xl filter drop-shadow-sm">{getCurrentSelection().flag}</span>
+          <span className="truncate">{getCurrentSelection().name}</span>
         </span>
+        
         <svg 
-          className={`chevron ${isOpen ? 'open' : ''}`}
+          className={`w-5 h-5 transition-transform duration-300 relative z-10 ${
+            isOpen ? 'transform rotate-180 text-youtube-red' : 'text-gray-400 group-hover:text-youtube-red'
+          }`}
           viewBox="0 0 24 24" 
           fill="none" 
           stroke="currentColor" 
@@ -115,27 +131,65 @@ const RegionSelector = ({ onRegionChange, selectedRegion = 'IN' }) => {
       </button>
 
       {isOpen && (
-        <div className="region-dropdown">
-          <div className="region-dropdown-content">
-            <div className="region-header">
-              <h3>Select Country</h3>
-              <p>Choose a country to see its trending videos</p>
-            </div>
+        <>
+          {/* Mobile Backdrop */}
+          <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"></div>
+          
+          {/* Dropdown */}
+          <div className={`
+            absolute top-full left-0 mt-2 z-[60]
+            bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 
+            rounded-xl shadow-2xl overflow-hidden
+            animate-slide-down
+            w-full min-w-[320px] max-w-md
+            max-h-80
+            transform transition-all duration-200 ease-out
+          `}>
+            <div className="flex flex-col h-full">
+              {/* Header */}
+              <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+                  🌍 Select Country
+                </h3>
+                <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                  Choose a country to see its trending videos
+                </p>
+              </div>
 
-            <div className="countries-grid">
-              {countries.map((country) => (
-                <button
-                  key={country.code}
-                  className={`country-item ${selectedRegion === country.code ? 'selected' : ''}`}
-                  onClick={() => handleCountrySelect(country)}
-                >
-                  <span className="country-flag">{country.flag}</span>
-                  <span className="country-name">{country.name}</span>
-                </button>
-              ))}
+              {/* Countries List */}
+              <div className="flex-1 overflow-y-auto p-2 space-y-1 max-h-64">
+                {countries.map((country) => (
+                  <button
+                    key={country.code}
+                    className={`
+                      w-full flex items-center gap-3 p-2.5 rounded-lg text-left 
+                      transition-all duration-200 group text-sm
+                      ${selectedRegion === country.code 
+                        ? 'bg-youtube-red/10 text-youtube-red font-medium' 
+                        : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300'
+                      }
+                    `}
+                    onClick={() => handleCountrySelect(country)}
+                  >
+                    <span className={`text-lg transition-transform duration-200 ${
+                      selectedRegion === country.code ? 'scale-110' : 'group-hover:scale-105'
+                    }`}>
+                      {country.flag}
+                    </span>
+                    <span className="truncate flex-1">
+                      {country.name}
+                    </span>
+                    {selectedRegion === country.code && (
+                      <svg className="w-4 h-4 text-youtube-red flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
