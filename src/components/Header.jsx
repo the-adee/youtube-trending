@@ -1,20 +1,79 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTheme } from '../hooks/useTheme';
 
 const Header = () => {
   const { isDarkMode, toggleTheme } = useTheme();
+  const [showNotifications, setShowNotifications] = useState(false);
+  const notificationsRef = useRef(null);
+
+  // Close notifications when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (notificationsRef.current && !notificationsRef.current.contains(event.target)) {
+        setShowNotifications(false);
+      }
+    };
+
+    if (showNotifications) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showNotifications]);
+
+  // Sample notifications data - User-facing features only
+  const notifications = [
+    {
+      id: 1,
+      title: "Welcome Message Added",
+      description: "New users now get a personalized welcome note explaining the purpose of this platform",
+      timestamp: "2 hours ago",
+      isNew: true
+    },
+    {
+      id: 2,
+      title: "Improved Visual Design",
+      description: "Enhanced button styling and visual elements for a more professional appearance",
+      timestamp: "1 day ago",
+      isNew: false
+    },
+    {
+      id: 3,
+      title: "Better User Experience",
+      description: "Improved site performance and faster loading times for trending videos",
+      timestamp: "2 days ago",
+      isNew: false
+    },
+    {
+      id: 4,
+      title: "Mobile Experience Enhanced",
+      description: "Better mobile responsiveness and touch-friendly controls for all devices",
+      timestamp: "3 days ago",
+      isNew: false
+    },
+    {
+      id: 5,
+      title: "Dark Mode Available",
+      description: "Toggle between light and dark themes for comfortable viewing any time of day",
+      timestamp: "5 days ago",
+      isNew: false
+    }
+  ];
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 dark:bg-gray-950/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 transition-colors duration-300">
-      <div className="flex items-center justify-between px-4 py-3 max-w-screen-2xl mx-auto">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-gray-950/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 transition-colors duration-300">
+      <div className="flex items-center justify-between px-4 py-2 max-w-full mx-auto">
         {/* Header Left - Logo */}
-        <div className="flex items-center gap-4 min-w-0">
-          <div className="flex items-center">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="flex items-center p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200">
             <svg 
-              className="w-[90px] h-[20px]" 
+              className="w-[100px] h-[24px] cursor-pointer" 
               viewBox="0 0 90 20" 
               preserveAspectRatio="xMidYMid meet" 
               focusable="false"
+              onClick={() => window.location.reload()}
             >
               <g viewBox="0 0 90 20" preserveAspectRatio="xMidYMid meet">
                 <g>
@@ -84,30 +143,113 @@ const Header = () => {
             )}
           </button>
 
-          {/* Create Button */}
-          <button className="hidden lg:flex p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 group" title="Create">
-            <svg className="w-5 h-5 text-gray-700 dark:text-gray-300 group-hover:text-youtube-red transition-colors duration-200" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M14,13h-3v3H9v-3H6v-2h3V8h2v3h3V13z M17,6H3v12h14v-6.39l4,1.83V8.56L17,6z M15,16H5V8h10V16z"/>
-            </svg>
-          </button>
-
           {/* Notifications */}
-          <button className="hidden lg:flex p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 group relative" title="Notifications">
-            <svg className="w-5 h-5 text-gray-700 dark:text-gray-300 group-hover:text-youtube-red transition-colors duration-200" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M10,20h4c0,1.1-0.9,2-2,2S10,21.1,10,20z M20,17.35V19H4v-1.65l2-1.88v-5.15c0-2.92,1.56-5.22,4-5.98V4.16 C10,3.21,10.79,2.42,11.74,2.42s1.74,0.79,1.74,1.74v0.18c2.44,0.76,4,3.06,4,5.98v5.15L20,17.35z M19,17.77l-2-1.88v-5.47 c0-2.47-1.19-4.36-3.13-5.1c-1.26-0.53-2.64-0.5-3.84,0.03C8.15,6.11,7,7.99,7,10.42v5.47l-2,1.88V18h14V17.77z"/>
-            </svg>
-            <div className="absolute top-1 right-1 w-2 h-2 bg-youtube-red rounded-full"></div>
-          </button>
+          <div className="relative" ref={notificationsRef}>
+            <button 
+              className="hidden lg:flex p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 group relative" 
+              title="Notifications"
+              onClick={() => setShowNotifications(!showNotifications)}
+            >
+              <svg className="w-5 h-5 text-gray-700 dark:text-gray-300 group-hover:text-youtube-red transition-colors duration-200" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M10,20h4c0,1.1-0.9,2-2,2S10,21.1,10,20z M20,17.35V19H4v-1.65l2-1.88v-5.15c0-2.92,1.56-5.22,4-5.98V4.16 C10,3.21,10.79,2.42,11.74,2.42s1.74,0.79,1.74,1.74v0.18c2.44,0.76,4,3.06,4,5.98v5.15L20,17.35z M19,17.77l-2-1.88v-5.47 c0-2.47-1.19-4.36-3.13-5.1c-1.26-0.53-2.64-0.5-3.84,0.03C8.15,6.11,7,7.99,7,10.42v5.47l-2,1.88V18h14V17.77z"/>
+              </svg>
+              <div className="absolute top-1 right-1 w-2 h-2 bg-youtube-red rounded-full"></div>
+            </button>
+
+            {/* Notifications Overlay */}
+            {showNotifications && (
+              <div className="absolute right-0 top-12 w-96 bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 z-50 max-h-96 overflow-hidden">
+                  {/* Header */}
+                  <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        Notifications
+                      </h3>
+                      <button
+                        onClick={() => setShowNotifications(false)}
+                        className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+                      >
+                        <svg className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Notifications List */}
+                  <div className="max-h-80 overflow-y-auto">
+                    {notifications.map((notification) => (
+                      <div 
+                        key={notification.id}
+                        className="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-600 last:border-b-0 transition-colors"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0 mt-1">
+                            <div className="w-2 h-2 bg-youtube-red rounded-full"></div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h4 className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                {notification.title}
+                              </h4>
+                              {notification.isNew && (
+                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                                  What's new
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-600 dark:text-gray-300 mb-1 line-clamp-2">
+                              {notification.description}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              {notification.timestamp}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Footer */}
+                  <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                    <button className="w-full text-sm text-youtube-red hover:text-red-700 dark:hover:text-red-300 font-medium transition-colors">
+                      View all notifications
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
 
           {/* Profile */}
-          <div className="relative">
-            <button className="w-8 h-8 rounded-full overflow-hidden border-2 border-transparent hover:border-youtube-red transition-colors duration-200">
+          <div className="relative group">
+            <button 
+              className="w-8 h-8 rounded-full overflow-hidden border-2 border-transparent hover:border-youtube-red transition-colors duration-200"
+              title="Remember when YouTube had a Trending tab? 📈"
+            >
               <img 
-                src="https://static.wikia.nocookie.net/logo-timeline/images/d/d6/YouTube_2012-2015_%28iOS%29.png/revision/latest?cb=20210228013508" 
-                alt="Profile" 
-                className="w-full h-full object-cover"
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/YouTube_social_white_squircle_%282017%29.svg/2048px-YouTube_social_white_squircle_%282017%29.svg.png" 
+                alt="YouTube Profile" 
+                className="w-full h-full object-cover bg-red-600"
               />
             </button>
+            
+            {/* Easter Egg Tooltip */}
+            <div className="absolute right-0 top-12 w-64 bg-gray-900 dark:bg-gray-700 text-white text-sm rounded-lg shadow-xl p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-50">
+              <div className="flex items-start gap-2">
+                <span className="text-lg">🎬</span>
+                <div>
+                  <p className="font-medium mb-1">YouTube Trending Memories</p>
+                  <p className="text-xs text-gray-300 dark:text-gray-400">
+                    "Back when discovering viral content was just a click away in the Trending tab. Those were simpler times!" 
+                  </p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 italic">
+                    - A nostalgic developer, 2025
+                  </p>
+                </div>
+              </div>
+              {/* Arrow pointing up */}
+              <div className="absolute -top-1 right-3 w-2 h-2 bg-gray-900 dark:bg-gray-700 transform rotate-45"></div>
+            </div>
           </div>
         </div>
       </div>

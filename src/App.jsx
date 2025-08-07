@@ -3,6 +3,7 @@ import './App.css'
 import Header from './components/Header'
 import TrendingPage from './components/TrendingPage'
 import MadeWithLove from './components/MadeWithLove'
+import WelcomeModal from './components/WelcomeModal'
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <TrendingPage />
         </main>
         <MadeWithLove />
+        <WelcomeModal />
       </div>
     </ThemeProvider>
   )
