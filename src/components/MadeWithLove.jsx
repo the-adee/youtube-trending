@@ -2,7 +2,8 @@ import React from 'react';
 
 const MadeWithLove = () => {
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    // GitHub overlay with fixed positioning and high z-index for proper stacking
+    <div className="github-overlay fixed bottom-6 right-6 z-[9999]">
       <a 
         href="https://github.com/the-adee" 
         target="_blank" 

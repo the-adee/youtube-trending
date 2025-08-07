@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, memo, useMemo, useCallback } from 'react';
 import ShareModal from './ShareModal';
 
-const VideoCard = ({ video, index, layout = 'row' }) => {
+const VideoCard = memo(({ video, index, layout = 'row' }) => {
   const [showShareModal, setShowShareModal] = useState(false);
-  const formatViewCount = (viewCount) => {
+  
+  // Memoize expensive calculations
+  const formatViewCount = useCallback((viewCount) => {
     const count = parseInt(viewCount);
     if (count >= 1000000000) {
       return `${(count / 1000000000).toFixed(1)}B`;
@@ -13,9 +15,9 @@ const VideoCard = ({ video, index, layout = 'row' }) => {
       return `${(count / 1000).toFixed(1)}K`;
     }
     return count.toLocaleString();
-  };
+  }, []);
 
-  const formatDuration = (duration) => {
+  const formatDuration = useCallback((duration) => {
     if (!duration) return '';
     
     // Parse ISO 8601 duration (PT#M#S)
@@ -31,9 +33,9 @@ const VideoCard = ({ video, index, layout = 'row' }) => {
     } else {
       return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     }
-  };
+  }, []);
 
-  const getTimeAgo = (publishedAt) => {
+  const getTimeAgo = useCallback((publishedAt) => {
     const now = new Date();
     const published = new Date(publishedAt);
     const diffInHours = Math.floor((now - published) / (1000 * 60 * 60));
@@ -49,14 +51,18 @@ const VideoCard = ({ video, index, layout = 'row' }) => {
     
     const diffInMonths = Math.floor(diffInDays / 30);
     return `${diffInMonths} month${diffInMonths > 1 ? 's' : ''} ago`;
-  };
+  }, []);
 
-  const handleShare = () => {
+  const handleShare = useCallback(() => {
     setShowShareModal(true);
-  };
+  }, []);
 
-  // Handle both backend API format and original YouTube API format
-  const videoData = {
+  const handleCloseModal = useCallback(() => {
+    setShowShareModal(false);
+  }, []);
+
+  // Memoize video data processing
+  const videoData = useMemo(() => ({
     id: video.id,
     title: video.title || video.snippet?.title,
     channelTitle: video.channelTitle || video.snippet?.channelTitle,
@@ -74,13 +80,13 @@ const VideoCard = ({ video, index, layout = 'row' }) => {
     rank: video.rank || (index + 1),
     categoryName: video.categoryName || 'Unknown',
     url: video.url || `https://www.youtube.com/watch?v=${video.id}`
-  };
+  }), [video, index]);
 
   return (
     <>
       {layout === 'row' ? (
         // YouTube-style row layout with improved mobile design
-        <div className="group bg-white dark:bg-gray-900 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-800 hover:border-youtube-red/20 dark:hover:border-youtube-red/20">
+        <div className="group bg-white dark:bg-gray-900 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden border border-gray-200 dark:border-gray-800 hover:border-youtube-red/20 dark:hover:border-youtube-red/20">
           <div className="flex gap-3 sm:gap-4 p-3 sm:p-4">
             {/* Rank Badge */}
             <div className="flex-shrink-0 flex items-start">
@@ -101,13 +107,14 @@ const VideoCard = ({ video, index, layout = 'row' }) => {
                   <img
                     src={videoData.thumbnails?.medium?.url || videoData.thumbnails?.default?.url || `https://picsum.photos/320/180?random=${index}`}
                     alt={videoData.title}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="video-thumbnail w-full h-full object-cover will-change-transform transition-transform duration-150 group-hover:scale-105"
                     loading="lazy"
+                    decoding="async"
                   />
                   
-                  {/* Play Button Overlay */}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center">
-                    <div className="w-12 h-12 bg-black/70 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform scale-75 group-hover:scale-100">
+                  {/* Play Button Overlay - Simplified */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                    <div className="w-12 h-12 bg-black/70 rounded-full flex items-center justify-center">
                       <svg className="w-5 h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z"/>
                       </svg>
@@ -127,7 +134,7 @@ const VideoCard = ({ video, index, layout = 'row' }) => {
             {/* Content */}
             <div className="flex-1 min-w-0 space-y-1.5 sm:space-y-2">
               {/* Title */}
-              <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2 text-sm sm:text-base lg:text-lg leading-tight group-hover:text-youtube-red transition-colors duration-200">
+              <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2 text-sm sm:text-base lg:text-lg leading-tight group-hover:text-youtube-red transition-colors duration-150">
                 <a 
                   href={videoData.url} 
                   target="_blank" 
@@ -199,7 +206,7 @@ const VideoCard = ({ video, index, layout = 'row' }) => {
                 
                 <button 
                   onClick={handleShare}
-                  className="ml-auto p-2 text-gray-400 hover:text-youtube-red hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-200"
+                  className="ml-auto p-2 text-gray-400 hover:text-youtube-red hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors duration-150"
                   title="Share video"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -341,11 +348,14 @@ const VideoCard = ({ video, index, layout = 'row' }) => {
       {showShareModal && (
         <ShareModal
           video={videoData}
-          onClose={() => setShowShareModal(false)}
+          onClose={handleCloseModal}
         />
       )}
     </>
   );
-};
+});
+
+// Add display name for debugging
+VideoCard.displayName = 'VideoCard';
 
 export default VideoCard;

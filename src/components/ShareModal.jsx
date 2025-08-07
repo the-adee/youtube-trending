@@ -8,8 +8,8 @@ const ShareModal = ({ video, onClose }) => {
       await navigator.clipboard.writeText(video.url);
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy:', err);
+    } catch {
+      // Silent fail - copy functionality not available
     }
   };
 

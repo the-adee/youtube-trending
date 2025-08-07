@@ -48,17 +48,10 @@ const TrendingPage = () => {
       }));
       
       setVideos(mockVideos);
-      console.log('📝 Using mock data for development');
     };
     
     try {
       const startTime = Date.now();
-      console.log('🔍 Starting API call with:', {
-        region: regionData.region,
-        category: categoryId || 'all',
-        regionName: regionData.regionName,
-        timestamp: new Date().toISOString()
-      });
 
       const result = await api.getTrending(
         regionData.region,
@@ -67,35 +60,22 @@ const TrendingPage = () => {
       );
       
       const duration = Date.now() - startTime;
-      console.log('🎯 Raw API result:', result);
       
       setDebugInfo(`✅ API Call completed in ${duration}ms. Success: ${result?.success}, Videos: ${result?.data?.videos?.length || 0}`);
       
       if (result && result.success) {
-        console.log('✅ Success! Video data:', {
-          videoCount: result.data?.videos?.length,
-          firstVideo: result.data?.videos?.[0]?.title,
-          requestId: result.meta?.requestId
-        });
         setVideos(result.data.videos || []);
         setCacheInfo(result.meta);
         setDebugInfo(`✅ Successfully loaded ${result.data?.videos?.length || 0} videos. Request ID: ${result.meta?.requestId}`);
       } else {
-        console.error('❌ API call was not successful:', result);
         setDebugInfo(`❌ API call failed: ${result?.error || 'Unknown error'}`);
         throw new Error(result?.error || 'Failed to fetch videos');
       }
     } catch (err) {
-      console.error('💥 Complete error details:', {
-        message: err.message,
-        stack: err.stack,
-        name: err.name
-      });
       setError(err.message);
       setDebugInfo(`💥 Error: ${err.message}`);
       
       // Fallback: Set mock data for development
-      console.log('🔄 Using fallback mock data...');
       setMockData();
       setDebugInfo(`🔄 Using mock data due to error: ${err.message}`);
     } finally {
@@ -112,7 +92,6 @@ const TrendingPage = () => {
   };
 
   const handleRegionChange = (regionData) => {
-    console.log('🌍 Region changed to:', regionData);
     setSelectedRegion(regionData);
   };
 
@@ -259,8 +238,8 @@ const TrendingPage = () => {
         </div>
       </div>
       
-      {/* Main Content */}
-      <main className="w-full px-3 sm:px-4 lg:px-8 py-3 sm:py-4 lg:py-6">
+      {/* Main Content - Optimized container */}
+      <main className="w-full px-3 sm:px-4 lg:px-8 py-3 sm:py-4 lg:py-6 scroll-container">
         
         {/* Debug Info - Development Only */}
         {debugInfo && (
@@ -325,13 +304,12 @@ const TrendingPage = () => {
             </p>
           </div>
         ) : (
-          /* Videos List - YouTube-style rows with improved mobile spacing */
-          <div className="space-y-3 sm:space-y-4 lg:space-y-6">
+          /* Videos List - Optimized for performance */
+          <div className="space-y-2 sm:space-y-3 lg:space-y-4">
             {videos.map((video, index) => (
               <div 
                 key={video.id}
-                className="animate-slide-up bg-white dark:bg-gray-900 rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200 dark:border-gray-800"
-                style={{ animationDelay: `${index * 25}ms` }}
+                className="video-card bg-white dark:bg-gray-900 rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow duration-150 border border-gray-200 dark:border-gray-800"
               >
                 <VideoCard 
                   video={video} 

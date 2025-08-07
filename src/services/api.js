@@ -9,25 +9,11 @@ class YouTubeAnalyticsAPI {
   constructor() {
     this.baseURL = API_CONFIG.BASE_URL;
     this.apiKey = API_CONFIG.API_KEY;
-    
-    console.log('🔧 API Configuration:', {
-      baseURL: this.baseURL,
-      hasApiKey: !!this.apiKey,
-      apiKeyLength: this.apiKey?.length,
-      envVarApiKey: import.meta.env.VITE_API_KEY,
-      envVarBaseUrl: import.meta.env.VITE_API_BASE_URL
-    });
   }
 
   // Private method to make authenticated requests
   async makeRequest(endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`;
-    
-    console.log('🚀 Making API request:', {
-      url,
-      apiKey: this.apiKey,
-      endpoint
-    });
     
     const response = await fetch(url, {
       ...options,
@@ -37,18 +23,9 @@ class YouTubeAnalyticsAPI {
         ...options.headers
       }
     });
-    
-    console.log('📡 API response status:', response.status);
-
-    console.log('📡 API response status:', response.status);
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error('❌ API error:', {
-        status: response.status,
-        statusText: response.statusText,
-        errorData
-      });
       
       if (response.status === 401) {
         throw new Error('API key is required. Please check your configuration.');
@@ -62,11 +39,6 @@ class YouTubeAnalyticsAPI {
     }
 
     const result = await response.json();
-    console.log('✅ API response data:', {
-      success: result.success,
-      videoCount: result.data?.videos?.length,
-      requestId: result.meta?.requestId
-    });
     
     return result;
   }

@@ -48,16 +48,9 @@ const Header = () => {
     },
     {
       id: 4,
-      title: "Mobile Experience Enhanced",
-      description: "Better mobile responsiveness and touch-friendly controls for all devices",
-      timestamp: "3 days ago",
-      isNew: false
-    },
-    {
-      id: 5,
       title: "Dark Mode Available",
       description: "Toggle between light and dark themes for comfortable viewing any time of day",
-      timestamp: "5 days ago",
+      timestamp: "3 days ago",
       isNew: false
     }
   ];
@@ -208,13 +201,6 @@ const Header = () => {
                         </div>
                       </div>
                     ))}
-                  </div>
-
-                  {/* Footer */}
-                  <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-                    <button className="w-full text-sm text-youtube-red hover:text-red-700 dark:hover:text-red-300 font-medium transition-colors">
-                      View all notifications
-                    </button>
                   </div>
                 </div>
               )}
