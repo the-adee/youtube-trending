@@ -2,11 +2,13 @@ import React, { useState, useEffect, useCallback } from 'react';
 import VideoCard from './VideoCard';
 import CategoryTabs from './CategoryTabs';
 import RegionSelector from './RegionSelector';
+import api from '../services/api';
 
 const TrendingPage = () => {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [debugInfo, setDebugInfo] = useState(''); // Add debug info state
   const [activeCategory, setActiveCategory] = useState('');
   const [cacheInfo, setCacheInfo] = useState(null);
   const [selectedRegion, setSelectedRegion] = useState({
@@ -16,92 +18,94 @@ const TrendingPage = () => {
     regionName: 'India'
   });
 
-  // Backend API configuration
-  const API_BASE_URL = 'http://localhost:3000/api';
-
   const fetchTrendingVideos = useCallback(async (categoryId = '', regionData = selectedRegion) => {
     setLoading(true);
     setError(null);
+    setDebugInfo('🔍 Starting API call...');
+    
+    // Mock data function
+    const setMockData = () => {
+      const mockVideos = Array.from({ length: 20 }, (_, index) => ({
+        id: `mock-${index}`,
+        title: `Trending Video #${index + 1} - Amazing Content That's Currently Viral`,
+        channelTitle: `Creator Channel ${index + 1}`,
+        channelId: `mock-channel-${index}`,
+        channelThumbnail: `https://ui-avatars.com/api/?name=Creator+Channel+${index + 1}&background=0066cc&color=fff&size=88`,
+        publishedAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
+        description: `This is a sample description for trending video ${index + 1}. It contains interesting content that people are watching right now.`,
+        thumbnails: {
+          medium: {
+            url: `https://picsum.photos/320/180?random=${index}`
+          }
+        },
+        viewCount: Math.floor(Math.random() * 10000000),
+        likeCount: Math.floor(Math.random() * 100000),
+        commentCount: Math.floor(Math.random() * 10000),
+        duration: `PT${Math.floor(Math.random() * 20 + 1)}M${Math.floor(Math.random() * 60)}S`,
+        rank: index + 1,
+        categoryName: 'Entertainment',
+        url: `https://www.youtube.com/watch?v=mock-${index}`
+      }));
+      
+      setVideos(mockVideos);
+      console.log('📝 Using mock data for development');
+    };
     
     try {
-      let url = `${API_BASE_URL}/trending`;
-      const params = new URLSearchParams();
-      
-      // Use the region from regionData (either country or sub-region)
-      params.set('region', regionData.region);
-      params.set('maxResults', '20');
-      
-      if (categoryId) {
-        params.set('category', categoryId);
-      }
-      
-      url += '?' + params.toString();
+      const startTime = Date.now();
+      console.log('🔍 Starting API call with:', {
+        region: regionData.region,
+        category: categoryId || 'all',
+        regionName: regionData.regionName,
+        timestamp: new Date().toISOString()
+      });
 
-      console.log('🔍 Fetching from:', url);
-      console.log('📍 Region details:', regionData);
-
-      const response = await fetch(url);
+      const result = await api.getTrending(
+        regionData.region,
+        categoryId || null,
+        20
+      );
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      const duration = Date.now() - startTime;
+      console.log('🎯 Raw API result:', result);
       
-      const result = await response.json();
+      setDebugInfo(`✅ API Call completed in ${duration}ms. Success: ${result?.success}, Videos: ${result?.data?.videos?.length || 0}`);
       
-      if (result.success) {
+      if (result && result.success) {
+        console.log('✅ Success! Video data:', {
+          videoCount: result.data?.videos?.length,
+          firstVideo: result.data?.videos?.[0]?.title,
+          requestId: result.meta?.requestId
+        });
         setVideos(result.data.videos || []);
         setCacheInfo(result.meta);
-        console.log('✅ Fetched videos:', result.data.videos?.length || 0);
-        console.log('📊 Cache info:', result.meta);
+        setDebugInfo(`✅ Successfully loaded ${result.data?.videos?.length || 0} videos. Request ID: ${result.meta?.requestId}`);
       } else {
-        throw new Error(result.error || 'Failed to fetch videos');
+        console.error('❌ API call was not successful:', result);
+        setDebugInfo(`❌ API call failed: ${result?.error || 'Unknown error'}`);
+        throw new Error(result?.error || 'Failed to fetch videos');
       }
     } catch (err) {
+      console.error('💥 Complete error details:', {
+        message: err.message,
+        stack: err.stack,
+        name: err.name
+      });
       setError(err.message);
-      console.error('❌ Error fetching trending videos:', err);
+      setDebugInfo(`💥 Error: ${err.message}`);
       
       // Fallback: Set mock data for development
+      console.log('🔄 Using fallback mock data...');
       setMockData();
+      setDebugInfo(`🔄 Using mock data due to error: ${err.message}`);
     } finally {
       setLoading(false);
     }
-  }, [selectedRegion]); // Include selectedRegion as dependency
-
-  const setMockData = () => {
-    // Mock data for development/demo purposes
-    const mockVideos = Array.from({ length: 20 }, (_, index) => ({
-      id: `mock-${index}`,
-      title: `Trending Video #${index + 1} - Amazing Content That's Currently Viral`,
-      channelTitle: `Creator Channel ${index + 1}`,
-      channelId: `mock-channel-${index}`,
-      channelThumbnail: `https://ui-avatars.com/api/?name=Creator+Channel+${index + 1}&background=0066cc&color=fff&size=88`,
-      publishedAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-      description: `This is a sample description for trending video ${index + 1}. It contains interesting content that people are watching right now.`,
-      thumbnails: {
-        medium: {
-          url: `https://picsum.photos/320/180?random=${index}`
-        }
-      },
-      viewCount: Math.floor(Math.random() * 10000000),
-      likeCount: Math.floor(Math.random() * 100000),
-      commentCount: Math.floor(Math.random() * 10000),
-      duration: `PT${Math.floor(Math.random() * 20 + 1)}M${Math.floor(Math.random() * 60)}S`,
-      rank: index + 1,
-      categoryName: 'Entertainment',
-      url: `https://www.youtube.com/watch?v=mock-${index}`
-    }));
-    
-    setVideos(mockVideos);
-    console.log('📝 Using mock data for development');
-  };
+  }, [selectedRegion]); // Include selectedRegion for default parameter
 
   useEffect(() => {
-    const loadTrendingVideos = async () => {
-      await fetchTrendingVideos(activeCategory, selectedRegion);
-    };
-    
-    loadTrendingVideos();
-  }, [activeCategory, selectedRegion, fetchTrendingVideos]); // Include all dependencies
+    fetchTrendingVideos(activeCategory, selectedRegion);
+  }, [activeCategory, selectedRegion, fetchTrendingVideos]); // Now fetchTrendingVideos is stable
 
   const handleCategoryChange = (categoryId) => {
     setActiveCategory(categoryId);
@@ -179,10 +183,6 @@ const TrendingPage = () => {
             </div>
           </div>
         </div>
-        <CategoryTabs 
-          activeCategory={activeCategory} 
-          onCategoryChange={handleCategoryChange} 
-        />
         <div className="error-message">
           <h2>Unable to load trending videos</h2>
           <p>Error: {error}</p>
@@ -251,7 +251,7 @@ const TrendingPage = () => {
       
       {/* Category Tabs */}
       <div className="sticky top-32 lg:top-36 z-30 bg-white/95 dark:bg-gray-950/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
-        <div className="w-full px-3 sm:px-4 lg:px-8 py-2">
+        <div className="w-full relative">
           <CategoryTabs 
             activeCategory={activeCategory} 
             onCategoryChange={handleCategoryChange} 
@@ -261,6 +261,16 @@ const TrendingPage = () => {
       
       {/* Main Content */}
       <main className="w-full px-3 sm:px-4 lg:px-8 py-3 sm:py-4 lg:py-6">
+        
+        {/* Debug Info - Development Only */}
+        {debugInfo && (
+          <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <div className="text-sm text-blue-800 dark:text-blue-200">
+              <strong>🔧 Debug Info:</strong> {debugInfo}
+            </div>
+          </div>
+        )}
+        
         {loading ? (
           /* Loading State */
           <div className="flex flex-col items-center justify-center py-12 lg:py-20">

@@ -18,33 +18,14 @@ const CategoryTabs = ({ activeCategory, onCategoryChange }) => {
 
   return (
     <div className="py-2">
-      {/* Mobile: Column layout */}
-      <div className="flex flex-col gap-2 sm:hidden">
-        {categories.map((category) => (
-          <button
-            key={category.id}
-            className={`
-              px-4 py-3 rounded-lg font-medium text-sm transition-all duration-200 w-full text-left
-              ${activeCategory === category.value 
-                ? 'bg-youtube-red text-white shadow-youtube' 
-                : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-              }
-            `}
-            onClick={() => onCategoryChange(category.value)}
-          >
-            {category.label}
-          </button>
-        ))}
-      </div>
-      
-      {/* Desktop/Tablet: Horizontal scroll layout */}
-      <div className="hidden sm:block overflow-x-auto">
-        <div className="flex gap-2 min-w-max px-2">
+      {/* Horizontal Scrollable Tabs for All Screen Sizes */}
+      <div className="overflow-x-auto px-3 sm:px-4 lg:px-8 py-2">
+        <div className="flex gap-2 min-w-max">
           {categories.map((category) => (
             <button
               key={category.id}
               className={`
-                px-4 py-2 rounded-full font-medium text-sm whitespace-nowrap transition-all duration-200 
+                px-3 sm:px-4 py-2 rounded-full font-medium text-sm whitespace-nowrap transition-all duration-200 
                 ${activeCategory === category.value 
                   ? 'bg-youtube-red text-white shadow-youtube' 
                   : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'

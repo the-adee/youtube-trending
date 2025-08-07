@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import a premium font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 :root {
   font-family: "Roboto", "Helvetica", "Arial", sans-serif;
   line-height: 1.4;
@@ -28,4 +31,10 @@ body {
 
 #root {
   min-height: 100vh;
+}
+
+/* Remove default focus outline */
+a:focus,
+button:focus {
+  outline: none !important;
 }
