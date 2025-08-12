@@ -1,7 +1,7 @@
 // API configuration for YouTube Trending Analytics
 const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
-  API_KEY: import.meta.env.VITE_API_KEY || 'yta_demo_key_123456789abcdef', // Demo key for development
+  BASE_URL: import.meta.env.VITE_API_BASE_URL,
+  API_KEY: import.meta.env.VITE_API_KEY, // Demo key for development
 };
 
 // API client class with authentication
@@ -13,7 +13,7 @@ class YouTubeAnalyticsAPI {
 
   // Private method to make authenticated requests
   async makeRequest(endpoint, options = {}) {
-    const url = `${this.baseURL}${endpoint}`;
+    const url = `${this.baseURL}/api${endpoint}`;
     
     const response = await fetch(url, {
       ...options,

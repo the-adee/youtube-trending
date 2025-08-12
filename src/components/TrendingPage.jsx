@@ -8,7 +8,6 @@ const TrendingPage = () => {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [debugInfo, setDebugInfo] = useState(''); // Add debug info state
   const [activeCategory, setActiveCategory] = useState('');
   const [cacheInfo, setCacheInfo] = useState(null);
   const [selectedRegion, setSelectedRegion] = useState({
@@ -21,7 +20,6 @@ const TrendingPage = () => {
   const fetchTrendingVideos = useCallback(async (categoryId = '', regionData = selectedRegion) => {
     setLoading(true);
     setError(null);
-    setDebugInfo('🔍 Starting API call...');
     
     // Mock data function
     const setMockData = () => {
@@ -51,33 +49,23 @@ const TrendingPage = () => {
     };
     
     try {
-      const startTime = Date.now();
-
       const result = await api.getTrending(
         regionData.region,
         categoryId || null,
         20
       );
       
-      const duration = Date.now() - startTime;
-      
-      setDebugInfo(`✅ API Call completed in ${duration}ms. Success: ${result?.success}, Videos: ${result?.data?.videos?.length || 0}`);
-      
       if (result && result.success) {
         setVideos(result.data.videos || []);
         setCacheInfo(result.meta);
-        setDebugInfo(`✅ Successfully loaded ${result.data?.videos?.length || 0} videos. Request ID: ${result.meta?.requestId}`);
       } else {
-        setDebugInfo(`❌ API call failed: ${result?.error || 'Unknown error'}`);
         throw new Error(result?.error || 'Failed to fetch videos');
       }
     } catch (err) {
       setError(err.message);
-      setDebugInfo(`💥 Error: ${err.message}`);
       
       // Fallback: Set mock data for development
       setMockData();
-      setDebugInfo(`🔄 Using mock data due to error: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -240,15 +228,6 @@ const TrendingPage = () => {
       
       {/* Main Content - Optimized container */}
       <main className="w-full px-3 sm:px-4 lg:px-8 py-3 sm:py-4 lg:py-6 scroll-container">
-        
-        {/* Debug Info - Development Only */}
-        {debugInfo && (
-          <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg">
-            <div className="text-sm text-blue-800 dark:text-blue-200">
-              <strong>🔧 Debug Info:</strong> {debugInfo}
-            </div>
-          </div>
-        )}
         
         {loading ? (
           /* Loading State */

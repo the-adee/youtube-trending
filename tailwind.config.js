@@ -1,5 +1,3 @@
-import lineClamp from '@tailwindcss/line-clamp';
-
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -18,6 +16,9 @@ export default {
           850: '#1a1a1a',
           950: '#0a0a0a',
         },
+      },
+      screens: {
+        'xs': '475px',
       },
       fontFamily: {
         'youtube': ['Roboto', 'Arial', 'sans-serif'],
@@ -55,7 +56,7 @@ export default {
     },
   },
   plugins: [
-    lineClamp,
+    // Line clamp is now included by default in Tailwind CSS v3.3+
   ],
   darkMode: ['class', '[data-theme="dark"]'],
 }
