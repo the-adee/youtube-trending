@@ -1,14 +1,14 @@
 // API configuration for YouTube Trending Analytics
 const API_CONFIG = {
   BASE_URL: import.meta.env.VITE_API_BASE_URL,
-  API_KEY: import.meta.env.VITE_API_KEY, // Demo key for development
+  AUTH_CODED: import.meta.env.VITE_API_KEY, // Demo key for development
 };
 
 // API client class with authentication
 class YouTubeAnalyticsAPI {
   constructor() {
     this.baseURL = API_CONFIG.BASE_URL;
-    this.apiKey = API_CONFIG.API_KEY;
+    this.authCode = API_CONFIG.AUTH_CODED;
   }
 
   // Private method to make authenticated requests
@@ -19,7 +19,7 @@ class YouTubeAnalyticsAPI {
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        'X-API-Key': this.apiKey,
+        'X-API-Key': this.authCode,
         ...options.headers
       }
     });
