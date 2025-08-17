@@ -7,6 +7,9 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+NETLIFY_DEPLOYMENT.md
+netlify.toml
+
 node_modules
 dist
 dist-ssr
@@ -31,5 +34,3 @@ dist-ssr
 *.sln
 *.sw?
 
-NETLIFY_DEPLOYMENT.md
-netlify.toml
