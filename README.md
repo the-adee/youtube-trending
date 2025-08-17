@@ -1,12 +1,42 @@
-# React + Vite
+# 🔥 YouTube Trending Analytics
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern web application that displays real-time YouTube trending videos with analytics and insights.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Real-time trending videos** from YouTube API
+- **Multi-region support** (India, US, UK, and more)
+- **Category filtering** (Music, Gaming, Sports, etc.)
+- **Dark/Light mode** toggle
+- **Direct YouTube links** and video sharing
+- **Fast loading** with caching and optimized performance
 
-## Expanding the ESLint configuration
+## Quick Start
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+```
+
+
+## Tech Stack
+
+- **React 19** - Frontend framework
+- **Vite** - Build tool and dev server
+- **Tailwind CSS** - Styling
+- **Heroicons** - Icons
+- **YouTube Data API v3** - Video data
+
+## Live Demo
+
+[View Live Application →](https://youtubetrending.vercel.app/)
+
+## Related
+
+- [Backend API Repository](https://github.com/the-adee/youtube-trending) - Express.js backend server
